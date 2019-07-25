@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "181950284733",
+    "firebase_url": "https://vface-48591.firebaseio.com",
+    "project_id": "vface-48591",
+    "storage_bucket": "vface-48591.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181950284733:android:904a02ea20489302",
+        "android_client_info": {
+          "package_name": "com.example.vface"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "181950284733-rdqnvbqrv2m48rmeed8e386vb8m56sjb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbJ2f-2oeNGQNRToP8kI6o-YWlX7LnQg4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "181950284733-rdqnvbqrv2m48rmeed8e386vb8m56sjb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

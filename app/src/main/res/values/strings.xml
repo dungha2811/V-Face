@@ -1,0 +1,44 @@
+<resources>
+    <!-- Firestore -->
+    <string name="collection_users">Users</string>
+
+    <string name="app_name">V-Face</string>
+    <string name="welcome">Welcome to V-Face</string>
+    <string name="login">Log In</string>
+    <string name="newUser">Register</string>
+    <string name="guest">Guest</string>
+    <string name="inputUsername">Enter Username:</string>
+    <string name="inputPassword">Enter Password:</string>
+    <string name="upload">Upload</string>
+    <string name="reInputPassword">Re-Enter Password:</string>
+    <string name="inputPhone">Phone Number: </string>
+    <string name="inputAge">Date of Birth :</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="viettel_logo">Viettel_Logo</string>
+    <string name="register">Register for new account</string>
+    <string name="inputGender">Gender: </string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="date">Select Date Of Birth</string>
+    <string name="email_address">Email Address:</string>
+    <string name="input_email_address">Enter Email Address</string>
+    <string name="user_face_image">User Face Image</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="start">Start</string>
+    <string name="title_activity_upload">UploadActivity</string>
+    <string name="choose_image_to_upload">Choose Image to Upload</string>
+    <string name="cancel">Cancel</string>
+    <string name="another_image">Choose another image</string>
+    <string name="log_out">Log out</string>
+    <string name="take_a_picture">Take a picture</string>
+    <string name="take_another_picture">Take another picture</string>
+    <string name="title_activity_gender">GenderActivity</string>
+    <string name="pick_gender">Pick a Gender that you are looking for</string>
+    <string name="title_activity_friends">FriendsActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>
