@@ -44,7 +44,8 @@ public class MenuActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
 
-    private List<User> list = new ArrayList<>();
+    private Bundle bundle;
+    private ArrayList<User> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +53,15 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         //define variable
+        bundle = new Bundle();
+//        bundle.putParcelableArrayList(list);
+        db = FirebaseFirestore.getInstance();
         upload = (Button) findViewById(R.id.btn_upload);
         start =(Button) findViewById(R.id.btn_start);
         signOut = (Button)findViewById(R.id.btn_logout);
         imageView = (ImageView) findViewById(R.id.iv_image);
         storageRef = FirebaseStorage.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
-        setContentView(R.layout.activity_gender);
 
         getImageFromStorage();
         getUserList();
@@ -130,8 +133,7 @@ public class MenuActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                User user = document.toObject(User.class);
-                                Log.d("Dung", user.getUsername());
+                                list.add(document.toObject(User.class));
                             }
                         } else {
                             Log.d("Dung", "Error getting documents: ", task.getException());
