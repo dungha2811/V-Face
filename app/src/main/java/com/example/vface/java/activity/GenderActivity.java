@@ -22,18 +22,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class GenderActivity extends AppCompatActivity {
 
     private ImageView male;
     private ImageView female;
+    private List<User> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gender);
-
         //define variable
         male = (ImageView) findViewById(R.id.iv_male);
         female = (ImageView) findViewById(R.id.iv_female);
@@ -45,6 +47,7 @@ public class GenderActivity extends AppCompatActivity {
         male.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("Gender",list.get(0).getEmailAddress());
             }
         });
 

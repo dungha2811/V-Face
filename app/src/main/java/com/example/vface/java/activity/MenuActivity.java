@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -53,8 +55,6 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         //define variable
-        bundle = new Bundle();
-//        bundle.putParcelableArrayList(list);
         db = FirebaseFirestore.getInstance();
         upload = (Button) findViewById(R.id.btn_upload);
         start =(Button) findViewById(R.id.btn_start);
@@ -80,6 +80,9 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, GenderActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("list",list);
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
