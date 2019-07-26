@@ -1,17 +1,24 @@
 package com.example.vface.java.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import com.example.vface.R;
 import com.example.vface.java.entity.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -30,7 +37,7 @@ public class GenderActivity extends AppCompatActivity {
 
     private ImageView male;
     private ImageView female;
-    private List<User> list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,14 @@ public class GenderActivity extends AppCompatActivity {
         male.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Gender",list.get(0).getEmailAddress());
+                Intent intent = new Intent(GenderActivity.this, FriendsActivity.class);
+                Bundle bundle = new Bundle();
+
+                //add data into bundle
+                bundle.putString("gender","Male");
+                intent.putExtras(bundle);
+
+                startActivity(intent);
             }
         });
 
@@ -55,9 +69,15 @@ public class GenderActivity extends AppCompatActivity {
         female.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(GenderActivity.this, FriendsActivity.class);
+                Bundle bundle = new Bundle();
 
+                //add data into bundle
+                bundle.putString("gender","Female");
+                intent.putExtras(bundle);
+
+                startActivity(intent);
             }
         });
-
     }
 }

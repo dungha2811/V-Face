@@ -32,10 +32,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public class MenuActivity extends AppCompatActivity {
 
     private ImageView imageView;
@@ -44,10 +40,7 @@ public class MenuActivity extends AppCompatActivity {
     private Button signOut;
     private StorageReference storageRef;
     private FirebaseAuth firebaseAuth;
-    private FirebaseFirestore db;
 
-    private Bundle bundle;
-    private ArrayList<User> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +48,6 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         //define variable
-        db = FirebaseFirestore.getInstance();
         upload = (Button) findViewById(R.id.btn_upload);
         start =(Button) findViewById(R.id.btn_start);
         signOut = (Button)findViewById(R.id.btn_logout);
@@ -64,7 +56,6 @@ public class MenuActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         getImageFromStorage();
-        getUserList();
 
         //set on click for button upload
         upload.setOnClickListener(new View.OnClickListener() {
@@ -80,9 +71,9 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, GenderActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("list",list);
-                intent.putExtras(bundle);
+//                Bundle bundle = new Bundle();
+//                bundle.putParcelableArrayList("list",list);
+//                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
@@ -127,21 +118,16 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
-    public void getUserList() {
-        db.collection("Users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                list.add(document.toObject(User.class));
-                            }
-                        } else {
-                            Log.d("Dung", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+    @Override
+    protected void onResume() {
+        getImageFromStorage();
+        super.onResume();
     }
+
+    @Override
+    protected void onRestart() {
+        getImageFromStorage();
+        super.onRestart();
+    }
+
 }

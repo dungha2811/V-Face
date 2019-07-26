@@ -1,9 +1,6 @@
 package com.example.vface.java.entity;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class User implements Parcelable {
+public class User{
 
     private String id;
     private String emailAddress;
@@ -13,25 +10,13 @@ public class User implements Parcelable {
     private String faceVector;
     private String gender;
     private String dateOfBirth;
+    private String imageLink;
 
 
     public User() {
     }
 
-    private User(Parcel in){
-        String[] data = new String[8];
-        this.id = data[0];
-        this.emailAddress = data[1];
-        this.username = data[2];
-        this.phoneNumber = data[3];
-        this.password = data[4];
-        this.faceVector = data[5];
-        this.gender = data[6];
-        this.dateOfBirth = data[7];
-        in.readStringArray(data);
-    }
-
-    public User(String id, String emailAddress, String username, String phoneNumber, String password, String faceVector, String gender, String dateOfBirth) {
+    public User(String id, String emailAddress, String username, String phoneNumber, String password, String faceVector, String gender, String dateOfBirth, String imageLink) {
         this.id = id;
         this.emailAddress = emailAddress;
         this.username = username;
@@ -40,6 +25,7 @@ public class User implements Parcelable {
         this.faceVector = faceVector;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
+        this.imageLink = imageLink;
     }
 
     public String getId() {
@@ -106,31 +92,11 @@ public class User implements Parcelable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getImageLink() {
+        return imageLink;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(this.id);
-        parcel.writeString(this.emailAddress);
-        parcel.writeString(this.phoneNumber);
-        parcel.writeString(this.password);
-        parcel.writeString(this.faceVector);
-        parcel.writeString(this.gender);
-        parcel.writeString(this.dateOfBirth);
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        @Override
-        public User createFromParcel(Parcel parcel) {
-            return new User(parcel);
-        }
-
-        @Override
-        public User[] newArray(int i) {
-            return new User[i];
-        }
-    };
 }

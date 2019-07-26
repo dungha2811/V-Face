@@ -157,6 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
                         user.setDateOfBirth(date);
                         user.setGender(gender);
                         user.setEmailAddress(email);
+                        user.setImageLink("TBD");
                         user.setId(Id);
 //                        String test1 = FirebaseAuth.getInstance().toString();
 //                        String test = FirebaseAuth.getInstance().getUid();

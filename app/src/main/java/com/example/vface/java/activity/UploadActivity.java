@@ -20,24 +20,27 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.vface.R;
+import com.example.vface.java.entity.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import io.opencensus.internal.Utils;
 
 public class UploadActivity extends AppCompatActivity {
 
     private Button upload;
     private Button chooseUploadImage;
     private Button takePicture;
+    private Button cancel;
     private ImageView imageView;
     private StorageReference storageRef;
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore db;
     private ProgressDialog mProgressDialog;
     private Uri input;
 
@@ -52,7 +55,9 @@ public class UploadActivity extends AppCompatActivity {
         chooseUploadImage = (Button) findViewById(R.id.btn_choose_image_to_upload);
         imageView = (ImageView) findViewById(R.id.iv_image);
         takePicture = (Button) findViewById(R.id.btn_take_picture);
+        cancel = (Button) findViewById(R.id.btn_cancel);
         storageRef = FirebaseStorage.getInstance().getReference();
+        db = FirebaseFirestore.getInstance();
         upload = (Button) findViewById(R.id.btn_upload);
         mProgressDialog = new ProgressDialog(UploadActivity.this);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -96,6 +101,15 @@ public class UploadActivity extends AppCompatActivity {
                 chooseUploadImage.setText(R.string.upload_image);
             }
         });
+
+        //set on click for cancel
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadActivity.this,MenuActivity.class);
+                startActivity(intent);
+            }
+        });
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -120,13 +134,24 @@ public class UploadActivity extends AppCompatActivity {
         //get the signed in user
         FirebaseUser user = firebaseAuth.getCurrentUser();
         assert user != null;
-        String userID = user.getUid();
+        final String userID = user.getUid();
 
-        StorageReference reference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
+        final StorageReference reference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
         reference.putFile(input).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                StorageReference userReference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
                 Toast.makeText(UploadActivity.this,"Upload Success",Toast.LENGTH_SHORT).show();
+                userReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Log.d("Upload Dung", uri.toString());
+                        DocumentReference documentReference =
+                                db.collection(getString(R.string.collection_users))
+                                        .document(userID);
+                        documentReference.update("imageLink",uri.toString());
+                    }
+                });
                 mProgressDialog.dismiss();
             }
         }).addOnFailureListener(new OnFailureListener() {
