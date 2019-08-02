@@ -22,7 +22,7 @@
     <string name="female">Female</string>
     <string name="date">Select Date Of Birth</string>
     <string name="email_address">Email Address:</string>
-    <string name="input_email_address">Enter Email Address</string>
+    <string name="input_email_address">Enter Email Address :</string>
     <string name="user_face_image">User Face Image</string>
     <string name="upload_image">Upload Image</string>
     <string name="start">Start</string>
@@ -40,6 +40,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="swipe_to_start">Swipe to start</string>
+    <string name="upload_profile_image">Upload profile Image</string>
 
 
 </resources>

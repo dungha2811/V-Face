@@ -23,7 +23,8 @@ public class FriendlyFragment extends Fragment {
     private String imageUrl;
     private int age;
 
-    public static FriendlyFragment newInstance(String username, String phoneNumber,String imgUrl,int age){
+    public static FriendlyFragment newInstance(String username,
+                                               String phoneNumber,String imgUrl,int age){
         FriendlyFragment friendlyFragment = new FriendlyFragment();
         Bundle bundle = new Bundle();
         bundle.putString("username",username);

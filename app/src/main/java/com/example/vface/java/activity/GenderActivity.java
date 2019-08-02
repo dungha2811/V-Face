@@ -54,7 +54,8 @@ public class GenderActivity extends AppCompatActivity {
         male.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GenderActivity.this, FriendsActivity.class);
+                Intent intent = new Intent(GenderActivity.this,
+                        FriendsActivity.class);
                 Bundle bundle = new Bundle();
 
                 //add data into bundle
@@ -69,7 +70,8 @@ public class GenderActivity extends AppCompatActivity {
         female.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GenderActivity.this, FriendsActivity.class);
+                Intent intent = new Intent(GenderActivity.this,
+                        FriendsActivity.class);
                 Bundle bundle = new Bundle();
 
                 //add data into bundle

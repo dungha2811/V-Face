@@ -17,19 +17,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.vface.R;
-import com.example.vface.java.entity.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 public class MenuActivity extends AppCompatActivity {
@@ -83,7 +76,8 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-                Toast.makeText(MenuActivity.this,"Log Out Successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MenuActivity.this,
+                        "Log Out Successfully!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MenuActivity.this,MainActivity.class);
                 startActivity(intent);
             }
@@ -100,7 +94,8 @@ public class MenuActivity extends AppCompatActivity {
         assert user != null;
         String userID = user.getUid();
 
-        final StorageReference reference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
+        final StorageReference reference =
+                storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -130,4 +125,13 @@ public class MenuActivity extends AppCompatActivity {
         super.onRestart();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(MenuActivity.this,
+                "Log Out because app crashed", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MenuActivity.this,MainActivity.class);
+        startActivity(intent);
+    }
 }

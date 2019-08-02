@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/btn_take_picture"
-            android:text="@string/upload_image"
+            android:text="@string/upload_profile_image"
             android:layout_marginTop="25dp"
             android:textSize="20sp"
             android:textColor="#FFFFFF"

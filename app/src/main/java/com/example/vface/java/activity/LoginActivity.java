@@ -1,5 +1,6 @@
 package com.example.vface.java.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText password;
     Button Login;
     Button Register;
+    private ProgressDialog mProgressDialog;
 
     private static final String TAG = "LoginActivity";
 
@@ -50,11 +53,15 @@ public class LoginActivity extends AppCompatActivity {
         Login = findViewById(R.id.btn_login);
         Register = findViewById(R.id.btn_register);
 
+        //define progress dialog
+        mProgressDialog = new ProgressDialog(LoginActivity.this);
+
         //set on click for register button
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this,
+                        RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -67,6 +74,8 @@ public class LoginActivity extends AppCompatActivity {
                 signIn();
             }
         });
+
+
 
     }
     private void setUpFireBase(){
@@ -81,7 +90,8 @@ public class LoginActivity extends AppCompatActivity {
                         //if user exist
                         if(user!=null){
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            FirebaseFirestoreSettings  settings = new FirebaseFirestoreSettings.Builder()
+                            FirebaseFirestoreSettings  settings =
+                                    new FirebaseFirestoreSettings.Builder()
                                     .build();
                             db.setFirestoreSettings(settings);
 
@@ -92,7 +102,8 @@ public class LoginActivity extends AppCompatActivity {
                                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    User user = Objects.requireNonNull(task.getResult()).toObject(User.class);
+                                    User user = Objects.requireNonNull(task.getResult())
+                                            .toObject(User.class);
                                 }
 
                             });
@@ -119,23 +130,47 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void signIn(){
 
+        mProgressDialog.setMessage("Logging in...");
+        mProgressDialog.show();
+
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString()
-                ,password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                ,password.getText().toString())
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 task.isSuccessful();
-                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                mProgressDialog.dismiss();
+                    Intent intent =
+                            new Intent(LoginActivity.this, MenuActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent
+                            .FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 Log.d("Dung","Success");
+
+
 
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(LoginActivity.this,"Email or password wrong or not matching", Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+                Toast.makeText(LoginActivity.this,
+                        "Email or password wrong or not matching", Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        FirebaseAuth.getInstance().signOut();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseAuth.getInstance().signOut();
     }
 }

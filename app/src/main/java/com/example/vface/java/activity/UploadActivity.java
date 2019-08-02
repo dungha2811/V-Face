@@ -1,11 +1,9 @@
 package com.example.vface.java.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -19,8 +17,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.StringRequest;
 import com.example.vface.R;
-import com.example.vface.java.entity.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +36,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 public class UploadActivity extends AppCompatActivity {
+
+    public static final String TAG = "UploadActivity";
 
     private Button upload;
     private Button chooseUploadImage;
@@ -42,6 +53,7 @@ public class UploadActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore db;
     private ProgressDialog mProgressDialog;
+    RequestQueue queue;
     private Uri input;
 
     private static int RESULT_LOAD_IMAGE = 1;
@@ -61,6 +73,12 @@ public class UploadActivity extends AppCompatActivity {
         upload = (Button) findViewById(R.id.btn_upload);
         mProgressDialog = new ProgressDialog(UploadActivity.this);
         firebaseAuth = FirebaseAuth.getInstance();
+
+        //handle request queue
+        queue = new RequestQueue(new DiskBasedCache(getCacheDir(),
+                1024 * 1024), new BasicNetwork(new HurlStack()));
+
+        queue.start();
 
         //disable upload button when image is not uploaded
         upload.setEnabled(false);
@@ -110,6 +128,7 @@ public class UploadActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -124,6 +143,7 @@ public class UploadActivity extends AppCompatActivity {
             assert extras != null;
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
+            input= getImageUri(this,imageBitmap);
         }
     }
 
@@ -136,30 +156,84 @@ public class UploadActivity extends AppCompatActivity {
         assert user != null;
         final String userID = user.getUid();
 
-        final StorageReference reference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
-        reference.putFile(input).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        final StorageReference reference =
+                storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
+        reference.putFile(input).
+                addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                StorageReference userReference = storageRef.child("images/users/"+ userID+"/"+userID+".jpg");
-                Toast.makeText(UploadActivity.this,"Upload Success",Toast.LENGTH_SHORT).show();
+                StorageReference userReference = storageRef.child("images/users/"
+                        + userID + "/" + userID + ".jpg");
+                Toast.makeText(UploadActivity.this, "Upload Success",
+                        Toast.LENGTH_SHORT).show();
                 userReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {
+                    public void onSuccess(final Uri uri) {
                         Log.d("Upload Dung", uri.toString());
                         DocumentReference documentReference =
                                 db.collection(getString(R.string.collection_users))
                                         .document(userID);
-                        documentReference.update("imageLink",uri.toString());
+                        documentReference.update("imageLink", uri.toString());
+
+                        String url =
+                                "http://35.198.248.118:8081" +
+                                        "/v-face-app-api/1.0.0/calculate-embedding-vector";
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Log.d("HttpClient",
+                                                "success! response: " + response);
+                                        DocumentReference documentReference =
+                                                db.collection(getString(R.string.collection_users))
+                                                        .document(userID);
+                                        documentReference.update("faceVector", response);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("HttpClient", "error: " + error.toString());
+                            }
+                        })
+                            {
+                                @Override
+                                protected Map<String, String> getParams() {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("image_file", uri.toString());
+
+                                return params;
+                            }
+                        };
+                        queue.add(stringRequest);
+                        mProgressDialog.dismiss();
+                        Intent intent = new Intent(UploadActivity.this,
+                                MenuActivity.class);
+                        startActivity(intent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(UploadActivity.this,
+                                "Upload Failed", Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
                     }
                 });
-                mProgressDialog.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(UploadActivity.this,"Upload Failed",Toast.LENGTH_SHORT).show();
-                mProgressDialog.dismiss();
             }
         });
+    }
+            public Uri getImageUri(Context inContext, Bitmap inImage) {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(),
+                        inImage, "Title", null);
+                return Uri.parse(path);
+    }
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }

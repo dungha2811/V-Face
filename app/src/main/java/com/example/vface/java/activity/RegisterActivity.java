@@ -3,6 +3,7 @@ package com.example.vface.java.activity;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -49,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener mDate;
     private String datedb = "";
     private String gender;
+    private ProgressDialog mProgressDialog;
 
     private FirebaseFirestore mDb ;
 
@@ -59,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         mDb = FirebaseFirestore.getInstance();
 
+        //define variable
         emailAddress = findViewById(R.id.et_email);
         userName = findViewById(R.id.et_username);
         password = findViewById(R.id.et_password);
@@ -66,6 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         phoneNumber = findViewById(R.id.et_phoneNumber);
         date = findViewById(R.id.tv_pick_age);
         radioGroup = findViewById(R.id.rg_gender);
+        mProgressDialog = new ProgressDialog(RegisterActivity.this);
         Button register = (findViewById(R.id.btn_register));
 
 
@@ -84,7 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
                         RegisterActivity.this,
                         2
                         , mDate,year,month,day);
-               (Objects.requireNonNull(dialog.getWindow())).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+               (Objects.requireNonNull(dialog.getWindow()))
+                       .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
         });
@@ -102,6 +107,11 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mProgressDialog.setMessage("Register new user with email address"
+                        + emailAddress.getText().toString() +" ...");
+                mProgressDialog.show();
+
                 // get selected radio button from radioGroup
                 int selectedId = radioGroup.getCheckedRadioButtonId();
 
@@ -131,23 +141,24 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
-//                register(emailAddress.getText().toString(), phoneNumber.getText().toString(),
-//                        password.getText().toString(), userName.getText().toString(),
-//                        gender, datedb);
                 }
         });
     }
 
-    public void register(final String email, final String phoneNumber, final String password, final String username
-            , final String gender, final String date){
+    /**
+     * Register user to database
+     */
+    public void register(final String email, final String phoneNumber, final String password,
+                         final String username, final String gender, final String date){
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+
                         //generate Id
                         String Id = FirebaseAuth.getInstance().getUid();
-//                        String Id = "abc";
+
                         //input data
                         User user = new User();
                         user.setPhoneNumber(phoneNumber);
@@ -159,11 +170,6 @@ public class RegisterActivity extends AppCompatActivity {
                         user.setEmailAddress(email);
                         user.setImageLink("TBD");
                         user.setId(Id);
-//                        String test1 = FirebaseAuth.getInstance().toString();
-//                        String test = FirebaseAuth.getInstance().getUid();
-//                        Log.d("users", Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
-
-                        //change the fireStore setting
                         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                                 .build();
                         mDb.setFirestoreSettings(settings);
@@ -177,13 +183,16 @@ public class RegisterActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, "Successfully create user", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(RegisterActivity.this,
+                                                "Successfully create user",
+                                                Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(RegisterActivity.this
                                             , LoginActivity.class);
                                         startActivity(intent);
                                     } else {
                                         Toast.makeText(RegisterActivity.this
-                                                , "Something went wrong", Toast.LENGTH_LONG).show();
+                                                , "Something went wrong",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
